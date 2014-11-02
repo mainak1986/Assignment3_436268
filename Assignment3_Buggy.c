@@ -1,74 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 int target = 0;
 struct data{char name[64];};
 struct fp{int (*fp)();};
 const int a = 2,b = 3;
-
 void falsePositive()
 {
-	int buffer[10],c,d;
-	buffer[10] = 12; c = d = 0;
+	int *buffer = (int *)calloc(10,sizeof(int));
+	buffer[15] = 12;
 	if(a + b == 4)
 		buffer[20] = a + b;
-	if(c + d != 0)
-		buffer[25] = c + d;
 }
-
-void Winner(){printf("\n\tPassed");}
-
-void notWinner(){printf("\n\tNot Passed");}
-
-void bufferOverflow() {
+void Winner(){printf("\n\tPassed\n");}
+void notWinner(){printf("\n\tNot Passed\n");}
+void bufferOverflow(char *user,char *passw) {
 	char userRights = 'n';
-	char userName[8],password[8];
-	printf("\n\tLogin as: ");
-	gets(userName);
-	printf("\n\tPassword: ");
-	gets(password);
+	printf("\n\tLogin as: %s",user);
+	printf("\n\tPassword: %s",passw);
 	if (userRights == 'n')
-		printf("\nWelcome, normal user '%s', your rights are limited.\n\n", userName);
+		printf("\nWelcome, normal user '%s'\n", user);
 	else
-		printf("\nWelcome, all mighty admin user '%s'!\n", userName);
+		printf("\nWelcome, admin user '%s'!\n", user);
+        *user++;
 }
-
-void formatVulnerability()
+void formatVulnerability(char *string)
 {
-  char buffer[512];
-  printf("\n\tEnter buffer value::");
-  fgets(buffer, sizeof(buffer), stdin);
-  printf(buffer);
+  printf(string);
   if(target != 0)
-      printf("\n\t target modified");
+      printf("\n\t target modified\n");
   else
-      printf("target is %08x :(\n", target);
+      printf("\n\ttarget is %08x :(\n", target);
 }
-
 int stackOverflow(int x)
 {
-   return x == 0 ? 1 : x *stackOverflow(x-1);
+   return x == 0 ? 1 : x * stackOverflow(x-1);
 }
-
-int main()
+int main(int argc,char *argv[])
 {
-	bufferOverflow();
-	formatVulnerability();
-	falsePositive();
+	bufferOverflow(argv[1],argv[2]);
+	formatVulnerability(argv[3]);
 	struct data *d;
 	struct fp *f;
-	char value[72];
 	d = malloc(sizeof(struct data));
 	f = malloc(sizeof(struct fp));
 	f->fp = notWinner;
-	printf("data is at %p, fp is at %p\n", d, f);
-	gets(value);
-	strcpy(d->name,value);
+	strcpy(d->name,argv[4]);
 	f->fp();
+        falsePositive();
 	stackOverflow(-2);
 	return 0;
 }
-
-
-
